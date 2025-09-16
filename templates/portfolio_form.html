@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - VirFolio{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-6">{{ title }}</h2>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="form-control">
+                    <label class="label" for="name">
+                        <span class="label-text">Portfolio Name</span>
+                    </label>
+                    {{ form.name(class="input input-bordered" + (" input-error" if form.name.errors else ""), placeholder="e.g., My Tech Portfolio") }}
+                    {% if form.name.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.name.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="description">
+                        <span class="label-text">Description (Optional)</span>
+                    </label>
+                    {{ form.description(class="textarea textarea-bordered", rows=4, placeholder="Describe your portfolio strategy...") }}
+                    {% if form.description.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.description.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="base_currency">
+                        <span class="label-text">Base Currency</span>
+                    </label>
+                    {{ form.base_currency(class="select select-bordered") }}
+                    {% if form.base_currency.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.base_currency.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-6">
+                    <div class="flex gap-4">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-ghost">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

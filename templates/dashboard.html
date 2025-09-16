@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - VirFolio{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Welcome back, {{ current_user.username }}!</h1>
+    <p class="text-gray-600">Here's your portfolio overview</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Total Value Card -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Portfolio Value</h2>
+            <p class="text-2xl font-bold text-primary">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_value) }}
+            </p>
+            <div class="flex items-center text-sm">
+                {% if total_return >= 0 %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-green-500">+{{ "{:.2f}".format(total_return) }}%</span>
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-red-500">{{ "{:.2f}".format(total_return) }}%</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Invested Card -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Invested</h2>
+            <p class="text-2xl font-bold">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_invested) }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Total Gain/Loss Card -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Gain/Loss</h2>
+            <p class="text-2xl font-bold {% if total_gain_loss >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_gain_loss) }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Number of Holdings Card -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Holdings</h2>
+            <p class="text-2xl font-bold">{{ total_holdings }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Asset Allocation Chart -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Asset Allocation</h2>
+            <div id="allocationChart" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Portfolio Performance</h2>
+            <div id="performanceChart" style="height: 300px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Portfolios -->
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title">Your Portfolios</h2>
+            <a href="{{ url_for('portfolio.create') }}" class="btn btn-primary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New Portfolio
+            </a>
+        </div>
+
+        {% if portfolios %}
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                            <th>Return</th>
+                            <th>Holdings</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for portfolio in portfolios %}
+                        <tr>
+                            <td class="font-medium">{{ portfolio.name }}</td>
+                            <td>{% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(portfolio.calculate_total_value(display_currency)) }}</td>
+                            <td>
+                                <span class="badge {% if portfolio.calculate_total_return() >= 0 %}badge-success{% else %}badge-error{% endif %}">
+                                    {{ "{:.2f}".format(portfolio.calculate_total_return()) }}%
+                                </span>
+                            </td>
+                            <td>{{ portfolio.positions|length }}</td>
+                            <td>
+                                <a href="{{ url_for('portfolio.view', id=portfolio.id) }}" class="btn btn-ghost btn-xs">View</a>
+                                <a href="{{ url_for('portfolio.edit', id=portfolio.id) }}" class="btn btn-ghost btn-xs">Edit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-500 mb-4">No portfolios yet. Create your first portfolio to get started!</p>
+                <a href="{{ url_for('portfolio.create') }}" class="btn btn-primary">Create Portfolio</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Asset Allocation Pie Chart
+    var allocationData = [{
+        values: {{ allocation_values | tojson }},
+        labels: {{ allocation_labels | tojson }},
+        type: 'pie',
+        hole: .4,
+        marker: {
+            colors: ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6']
+        }
+    }];
+
+    var allocationLayout = {
+        height: 300,
+        margin: {t: 20, b: 20, l: 20, r: 20},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('allocationChart', allocationData, allocationLayout, {responsive: true});
+
+    // Performance Line Chart
+    var performanceData = [{
+        x: {{ performance_dates | tojson }},
+        y: {{ performance_values | tojson }},
+        type: 'scatter',
+        mode: 'lines',
+        line: {
+            color: '#8B5CF6',
+            width: 2
+        },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(139, 92, 246, 0.1)'
+    }];
+
+    var performanceLayout = {
+        height: 300,
+        margin: {t: 20, b: 40, l: 60, r: 20},
+        xaxis: {
+            title: 'Date',
+            gridcolor: 'rgba(0,0,0,0.1)'
+        },
+        yaxis: {
+            title: 'Value ($)',
+            gridcolor: 'rgba(0,0,0,0.1)'
+        },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('performanceChart', performanceData, performanceLayout, {responsive: true});
+</script>
+{% endblock %}

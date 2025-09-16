@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - VirFolio{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">Contact Us</h1>
+
+            <p class="text-gray-600 mb-8">
+                Have questions, suggestions, or feedback? We'd love to hear from you!
+            </p>
+
+            <form method="POST" action="#">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Name</span>
+                    </label>
+                    <input type="text" placeholder="Your Name" class="input input-bordered" required />
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+                    <input type="email" placeholder="your.email@example.com" class="input input-bordered" required />
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Subject</span>
+                    </label>
+                    <input type="text" placeholder="What's this about?" class="input input-bordered" required />
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Message</span>
+                    </label>
+                    <textarea class="textarea textarea-bordered" rows="5" placeholder="Your message..." required></textarea>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary" disabled>Send Message (Coming Soon)</button>
+                </div>
+            </form>
+
+            <div class="divider mt-8">OR</div>
+
+            <div class="text-center">
+                <p class="text-gray-600">
+                    For immediate assistance, reach out via:
+                </p>
+                <div class="mt-4 space-y-2">
+                    <p><strong>Email:</strong> support@virfolio.com</p>
+                    <p><strong>Response Time:</strong> Within 24-48 hours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

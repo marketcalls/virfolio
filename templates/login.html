@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Login - VirFolio{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[600px]">
+    <div class="card w-full max-w-md shadow-2xl bg-base-100">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-bold text-center mb-6">Welcome Back</h2>
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-control">
+                    <label class="label" for="email">
+                        <span class="label-text">Email</span>
+                    </label>
+                    {{ form.email(class="input input-bordered" + (" input-error" if form.email.errors else ""), placeholder="Enter your email") }}
+                    {% if form.email.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.email.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="password">
+                        <span class="label-text">Password</span>
+                    </label>
+                    {{ form.password(class="input input-bordered" + (" input-error" if form.password.errors else ""), placeholder="Enter your password", type="password") }}
+                    {% if form.password.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                    <label class="label">
+                        <a href="#" class="label-text-alt link link-hover">Forgot password?</a>
+                    </label>
+                </div>
+
+                <div class="form-control mt-6">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+
+            <div class="divider mt-6">OR</div>
+
+            <p class="text-center text-sm">
+                New to VirFolio?
+                <a href="{{ url_for('auth.register') }}" class="link link-primary">Sign up</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

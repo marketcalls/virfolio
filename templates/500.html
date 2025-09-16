@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - VirFolio{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[400px]">
+    <div class="text-center">
+        <h1 class="text-9xl font-bold text-gray-300">500</h1>
+        <p class="text-2xl font-bold text-gray-700 mb-4">Server Error</p>
+        <p class="text-gray-500 mb-8">Something went wrong. Please try again later.</p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go Home</a>
+    </div>
+</div>
+{% endblock %}

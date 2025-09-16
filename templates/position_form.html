@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit{% else %}Add{% endif %} Position - VirFolio{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-6">
+                {% if editing %}Edit{% else %}Add{% endif %} Position for {{ portfolio.name }}
+            </h2>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label" for="ticker">
+                            <span class="label-text">Stock Ticker</span>
+                        </label>
+                        {{ form.ticker(class="input input-bordered" + (" input-error" if form.ticker.errors else ""), placeholder="e.g., AAPL, RELIANCE") }}
+                        {% if form.ticker.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.ticker.errors[0] }}</span>
+                            </label>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="exchange">
+                            <span class="label-text">Exchange</span>
+                        </label>
+                        {{ form.exchange(class="select select-bordered") }}
+                        {% if form.exchange.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.exchange.errors[0] }}</span>
+                            </label>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="form-control">
+                        <label class="label" for="quantity">
+                            <span class="label-text">Quantity</span>
+                        </label>
+                        {{ form.quantity(class="input input-bordered" + (" input-error" if form.quantity.errors else ""), placeholder="Number of shares") }}
+                        {% if form.quantity.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.quantity.errors[0] }}</span>
+                            </label>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="buy_price">
+                            <span class="label-text">Buy Price (per share)</span>
+                        </label>
+                        {{ form.buy_price(class="input input-bordered" + (" input-error" if form.buy_price.errors else ""), placeholder="Price per share") }}
+                        {% if form.buy_price.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.buy_price.errors[0] }}</span>
+                            </label>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="buy_date">
+                        <span class="label-text">Buy Date</span>
+                    </label>
+                    {{ form.buy_date(class="input input-bordered" + (" input-error" if form.buy_date.errors else "")) }}
+                    {% if form.buy_date.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.buy_date.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="notes">
+                        <span class="label-text">Notes (Optional)</span>
+                    </label>
+                    {{ form.notes(class="textarea textarea-bordered", rows=3, placeholder="Any additional notes about this position...") }}
+                    {% if form.notes.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.notes.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-6">
+                    <div class="flex gap-4">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('portfolio.view', id=portfolio.id) }}" class="btn btn-ghost">Cancel</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="alert alert-info mt-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <p class="text-sm">For Indian stocks, use NSE or BSE exchange. Stock prices will be fetched automatically.</p>
+                    <p class="text-sm mt-1">US stocks: AAPL, GOOGL, MSFT | Indian stocks: RELIANCE, TCS, INFY</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ portfolio.name }} - VirFolio{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold mb-2">{{ portfolio.name }}</h1>
+            {% if portfolio.description %}
+                <p class="text-gray-600">{{ portfolio.description }}</p>
+            {% endif %}
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ url_for('portfolio.edit', id=portfolio.id) }}" class="btn btn-outline btn-sm">Edit</a>
+            <a href="{{ url_for('portfolio.add_position', portfolio_id=portfolio.id) }}" class="btn btn-primary btn-sm">Add Position</a>
+        </div>
+    </div>
+</div>
+
+<!-- Portfolio Summary -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Value</h2>
+            <p class="text-2xl font-bold text-primary">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}
+                {{ "{:,.2f}".format(portfolio.calculate_total_value(display_currency)) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Invested</h2>
+            <p class="text-2xl font-bold">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}
+                {{ "{:,.2f}".format(portfolio.calculate_total_cost(display_currency)) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Return</h2>
+            <p class="text-2xl font-bold {% if portfolio.calculate_total_return() >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                {{ "{:+.2f}".format(portfolio.calculate_total_return()) }}%
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Positions</h2>
+            <p class="text-2xl font-bold">{{ portfolio.positions|length }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Positions Table -->
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Holdings</h2>
+
+        {% if portfolio.positions %}
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Quantity</th>
+                            <th>Buy Price</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>Gain/Loss</th>
+                            <th>Return %</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for position in portfolio.positions %}
+                        <tr>
+                            <td>
+                                <div class="font-bold">{{ position.ticker }}</div>
+                                <div class="text-sm opacity-50">{{ position.exchange }}</div>
+                            </td>
+                            <td>{{ position.quantity }}</td>
+                            <td>
+                                {% if position.get_position_currency() == 'INR' %}₹{% else %}${% endif %}
+                                {{ "{:.2f}".format(position.buy_price) }}
+                            </td>
+                            <td>
+                                {% if position.current_price %}
+                                    {% if position.get_position_currency() == 'INR' %}₹{% else %}${% endif %}
+                                    {{ "{:.2f}".format(position.current_price) }}
+                                {% else %}
+                                    <span class="text-gray-400">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="font-medium">
+                                {% if display_currency == 'INR' %}₹{% else %}${% endif %}
+                                {{ "{:,.2f}".format(position.calculate_market_value(display_currency)) }}
+                            </td>
+                            <td class="{% if position.calculate_gain_loss(display_currency) >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                                {% if display_currency == 'INR' %}₹{% else %}${% endif %}
+                                {{ "{:+,.2f}".format(position.calculate_gain_loss(display_currency)) }}
+                            </td>
+                            <td>
+                                <span class="badge {% if position.calculate_gain_loss_percentage() >= 0 %}badge-success{% else %}badge-error{% endif %}">
+                                    {{ "{:+.2f}".format(position.calculate_gain_loss_percentage()) }}%
+                                </span>
+                            </td>
+                            <td>
+                                <div class="dropdown dropdown-end">
+                                    <label tabindex="0" class="btn btn-ghost btn-xs">•••</label>
+                                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32">
+                                        <li><a href="{{ url_for('portfolio.edit_position', id=position.id) }}">Edit</a></li>
+                                        <li>
+                                            <form method="POST" action="{{ url_for('portfolio.delete_position', id=position.id) }}">
+                                                <button type="submit" class="text-error" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-500 mb-4">No positions yet in this portfolio.</p>
+                <a href="{{ url_for('portfolio.add_position', portfolio_id=portfolio.id) }}" class="btn btn-primary">Add First Position</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Allocation Chart -->
+{% if portfolio.positions %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Asset Allocation</h2>
+            <div id="allocationChart" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Sector Distribution</h2>
+            <div id="sectorChart" style="height: 300px;"></div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if portfolio.positions %}
+<script>
+    // Asset Allocation Chart
+    var allocationData = [{
+        values: [{% for position in portfolio.positions %}{{ position.calculate_market_value(display_currency) }}{% if not loop.last %},{% endif %}{% endfor %}],
+        labels: [{% for position in portfolio.positions %}'{{ position.ticker }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        type: 'pie',
+        hole: .4,
+        marker: {
+            colors: ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#14B8A6', '#6366F1']
+        }
+    }];
+
+    var allocationLayout = {
+        height: 300,
+        margin: {t: 20, b: 20, l: 20, r: 20},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('allocationChart', allocationData, allocationLayout, {responsive: true});
+
+    // Sector Distribution Chart
+    var sectors = {};
+    {% for position in portfolio.positions %}
+        var sector = '{{ position.sector or "Unknown" }}';
+        sectors[sector] = (sectors[sector] || 0) + {{ position.calculate_market_value(display_currency) }};
+    {% endfor %}
+
+    var sectorData = [{
+        x: Object.keys(sectors),
+        y: Object.values(sectors),
+        type: 'bar',
+        marker: {
+            color: '#8B5CF6'
+        }
+    }];
+
+    var sectorLayout = {
+        height: 300,
+        margin: {t: 20, b: 80, l: 60, r: 20},
+        xaxis: {
+            tickangle: -45
+        },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('sectorChart', sectorData, sectorLayout, {responsive: true});
+</script>
+{% endif %}
+{% endblock %}

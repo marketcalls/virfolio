@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}VirFolio - Virtual Portfolio Tracker{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero min-h-[600px] relative overflow-hidden">
+    <div class="absolute inset-0 gradient-bg opacity-10"></div>
+    <div class="hero-content text-center relative z-10">
+        <div class="max-w-4xl">
+            <h1 class="text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
+                Track Your Virtual Portfolio
+            </h1>
+            <p class="text-xl mb-8 text-gray-700">
+                Monitor US and Indian stocks, analyze performance, and make informed investment decisions with VirFolio's powerful portfolio tracking platform.
+            </p>
+            <div class="space-x-4">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-20">
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-4">Powerful Features</h2>
+        <p class="text-xl text-gray-600">Everything you need to track your investments</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+        <!-- Feature Card 1 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Real-time Market Data</h3>
+                <p>Get live prices and market data for US and Indian stocks powered by yfinance.</p>
+            </div>
+        </div>
+
+        <!-- Feature Card 2 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Interactive Analytics</h3>
+                <p>Visualize your portfolio performance with interactive Plotly charts and detailed metrics.</p>
+            </div>
+        </div>
+
+        <!-- Feature Card 3 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Multi-Currency Support</h3>
+                <p>Track portfolios in USD and INR with automatic currency conversion.</p>
+            </div>
+        </div>
+
+        <!-- Feature Card 4 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Multiple Portfolios</h3>
+                <p>Create and manage multiple portfolios to track different investment strategies.</p>
+            </div>
+        </div>
+
+        <!-- Feature Card 5 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Import/Export Data</h3>
+                <p>Import your existing portfolio or export data in CSV/JSON formats.</p>
+            </div>
+        </div>
+
+        <!-- Feature Card 6 -->
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="card-title">Performance Metrics</h3>
+                <p>Track returns, gains/losses, and performance against benchmarks.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20">
+    <div class="card gradient-bg text-white">
+        <div class="card-body text-center py-16">
+            <h2 class="text-4xl font-bold mb-4">Ready to Start Tracking?</h2>
+            <p class="text-xl mb-8">Join VirFolio today and take control of your investment portfolio</p>
+            {% if not current_user.is_authenticated %}
+                <div>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-lg bg-white text-purple-600 hover:bg-gray-100 border-none">
+                        Create Free Account
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

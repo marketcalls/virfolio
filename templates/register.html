@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Register - VirFolio{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[600px]">
+    <div class="card w-full max-w-md shadow-2xl bg-base-100">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-bold text-center mb-6">Create Account</h2>
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-control">
+                    <label class="label" for="username">
+                        <span class="label-text">Username</span>
+                    </label>
+                    {{ form.username(class="input input-bordered" + (" input-error" if form.username.errors else ""), placeholder="Choose a username") }}
+                    {% if form.username.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.username.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="email">
+                        <span class="label-text">Email</span>
+                    </label>
+                    {{ form.email(class="input input-bordered" + (" input-error" if form.email.errors else ""), placeholder="Enter your email") }}
+                    {% if form.email.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.email.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="password">
+                        <span class="label-text">Password</span>
+                    </label>
+                    {{ form.password(class="input input-bordered" + (" input-error" if form.password.errors else ""), placeholder="Create a password", type="password") }}
+                    {% if form.password.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label" for="confirm_password">
+                        <span class="label-text">Confirm Password</span>
+                    </label>
+                    {{ form.confirm_password(class="input input-bordered" + (" input-error" if form.confirm_password.errors else ""), placeholder="Confirm your password", type="password") }}
+                    {% if form.confirm_password.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.confirm_password.errors[0] }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-6">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+
+            <div class="divider mt-6">OR</div>
+
+            <p class="text-center text-sm">
+                Already have an account?
+                <a href="{{ url_for('auth.login') }}" class="link link-primary">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

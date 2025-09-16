@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}About - VirFolio{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">About VirFolio</h1>
+
+            <div class="prose max-w-none">
+                <p class="text-lg mb-4">
+                    VirFolio is a comprehensive virtual portfolio tracking platform designed to help investors monitor their investments across US and Indian stock markets.
+                </p>
+
+                <h2 class="text-2xl font-bold mt-8 mb-4">Our Mission</h2>
+                <p>
+                    To provide investors with a powerful, intuitive, and free platform for tracking their investment portfolios, analyzing performance, and making informed investment decisions.
+                </p>
+
+                <h2 class="text-2xl font-bold mt-8 mb-4">Key Features</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Real-time stock prices from US and Indian markets</li>
+                    <li>Multiple portfolio management</li>
+                    <li>Performance analytics and visualizations</li>
+                    <li>Sector and geographical allocation tracking</li>
+                    <li>Historical performance tracking</li>
+                    <li>Multi-currency support (USD and INR)</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold mt-8 mb-4">Technology Stack</h2>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h3 class="font-bold">Backend</h3>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>Flask (Python)</li>
+                            <li>SQLAlchemy ORM</li>
+                            <li>yfinance API</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold">Frontend</h3>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>Tailwind CSS</li>
+                            <li>DaisyUI Components</li>
+                            <li>Plotly Charts</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

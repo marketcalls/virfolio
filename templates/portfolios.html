@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}My Portfolios - VirFolio{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold">My Portfolios</h1>
+        <a href="{{ url_for('portfolio.create') }}" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Portfolio
+        </a>
+    </div>
+</div>
+
+{% if portfolios %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for portfolio in portfolios %}
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+                <h2 class="card-title">{{ portfolio.name }}</h2>
+                {% if portfolio.description %}
+                    <p class="text-gray-600 text-sm">{{ portfolio.description[:100] }}{% if portfolio.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+
+                <div class="mt-4 space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Value:</span>
+                        <span class="font-bold">
+                            {% if display_currency == 'INR' %}₹{% else %}${% endif %}
+                            {{ "{:,.2f}".format(portfolio.calculate_total_value(display_currency)) }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Return:</span>
+                        <span class="badge {% if portfolio.calculate_total_return() >= 0 %}badge-success{% else %}badge-error{% endif %}">
+                            {{ "{:+.2f}".format(portfolio.calculate_total_return()) }}%
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Holdings:</span>
+                        <span>{{ portfolio.positions|length }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions justify-end mt-4">
+                    <a href="{{ url_for('portfolio.view', id=portfolio.id) }}" class="btn btn-primary btn-sm">View</a>
+                    <a href="{{ url_for('portfolio.edit', id=portfolio.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                    <form method="POST" action="{{ url_for('portfolio.delete', id=portfolio.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-error btn-sm" onclick="return confirm('Are you sure you want to delete this portfolio?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body text-center py-16">
+            <h2 class="text-2xl font-bold mb-4">No Portfolios Yet</h2>
+            <p class="text-gray-600 mb-8">Create your first portfolio to start tracking your investments</p>
+            <div>
+                <a href="{{ url_for('portfolio.create') }}" class="btn btn-primary btn-lg">Create Your First Portfolio</a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

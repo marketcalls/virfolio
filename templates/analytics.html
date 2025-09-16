@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - VirFolio{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Portfolio Analytics</h1>
+    <p class="text-gray-600">Comprehensive analysis of all your portfolios</p>
+</div>
+
+<!-- Overall Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Portfolio Value</h2>
+            <p class="text-2xl font-bold text-primary">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_value) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Invested</h2>
+            <p class="text-2xl font-bold">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_invested) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Total Gain/Loss</h2>
+            <p class="text-2xl font-bold {% if total_gain_loss >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(total_gain_loss) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-sm text-gray-600">Overall Return</h2>
+            <p class="text-2xl font-bold {% if total_return >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                {{ "{:+.2f}".format(total_return) }}%
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Sector Allocation -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Sector Allocation</h2>
+            <div id="sectorChart" style="height: 350px;"></div>
+        </div>
+    </div>
+
+    <!-- Country Allocation -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Country Allocation</h2>
+            <div id="countryChart" style="height: 350px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Performers -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Top Gainers -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-green-500">Top Gainers</h2>
+            {% if top_gainers %}
+                <div class="space-y-3">
+                    {% for stock in top_gainers %}
+                    <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <div>
+                            <p class="font-bold">{{ stock.ticker }}</p>
+                            <p class="text-sm text-gray-600">{% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(stock.value) }}</p>
+                        </div>
+                        <span class="badge badge-success badge-lg">+{{ "{:.2f}".format(stock.return) }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No gainers to display</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Top Losers -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-red-500">Top Losers</h2>
+            {% if top_losers %}
+                <div class="space-y-3">
+                    {% for stock in top_losers %}
+                    {% if stock.return < 0 %}
+                    <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                        <div>
+                            <p class="font-bold">{{ stock.ticker }}</p>
+                            <p class="text-sm text-gray-600">{% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(stock.value) }}</p>
+                        </div>
+                        <span class="badge badge-error badge-lg">{{ "{:.2f}".format(stock.return) }}%</span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No losers to display</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Portfolio Comparison -->
+<div class="card bg-base-100 shadow-xl mt-8">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Portfolio Comparison</h2>
+        {% if portfolios %}
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Portfolio</th>
+                            <th>Value</th>
+                            <th>Cost</th>
+                            <th>Gain/Loss</th>
+                            <th>Return %</th>
+                            <th>Holdings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for portfolio in portfolios %}
+                        <tr>
+                            <td class="font-medium">{{ portfolio.name }}</td>
+                            <td>{% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(portfolio.calculate_total_value(display_currency)) }}</td>
+                            <td>{% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(portfolio.calculate_total_cost(display_currency)) }}</td>
+                            <td class="{% if portfolio.calculate_gain_loss(display_currency) >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                                {% if display_currency == 'INR' %}₹{% else %}${% endif %}{{ "{:,.2f}".format(portfolio.calculate_gain_loss(display_currency)) }}
+                            </td>
+                            <td>
+                                <span class="badge {% if portfolio.calculate_total_return() >= 0 %}badge-success{% else %}badge-error{% endif %}">
+                                    {{ "{:.2f}".format(portfolio.calculate_total_return()) }}%
+                                </span>
+                            </td>
+                            <td>{{ portfolio.positions|length }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-gray-500 py-8">No portfolios to analyze</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Sector Allocation Chart
+    var sectorData = {{ sector_allocation | safe }};
+    var sectorChart = [{
+        values: Object.values(sectorData),
+        labels: Object.keys(sectorData),
+        type: 'pie',
+        hole: .4,
+        marker: {
+            colors: ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#14B8A6', '#6366F1']
+        }
+    }];
+
+    var sectorLayout = {
+        height: 350,
+        margin: {t: 20, b: 20, l: 20, r: 20},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('sectorChart', sectorChart, sectorLayout, {responsive: true});
+
+    // Country Allocation Chart
+    var countryData = {{ country_allocation | safe }};
+    var countryChart = [{
+        values: Object.values(countryData),
+        labels: Object.keys(countryData),
+        type: 'pie',
+        marker: {
+            colors: ['#3B82F6', '#10B981']
+        }
+    }];
+
+    var countryLayout = {
+        height: 350,
+        margin: {t: 20, b: 20, l: 20, r: 20},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    Plotly.newPlot('countryChart', countryChart, countryLayout, {responsive: true});
+</script>
+{% endblock %}

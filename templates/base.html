@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VirFolio - Virtual Portfolio Tracker{% endblock %}</title>
+
+    <!-- Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Plotly for charts -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Custom CSS -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Navbar -->
+    <nav class="navbar bg-base-100 shadow-lg">
+        <div class="container mx-auto">
+            <div class="flex-1">
+                <a href="{{ url_for('main.index') }}" class="btn btn-ghost text-xl font-bold gradient-bg text-white px-4">
+                    VirFolio
+                </a>
+            </div>
+            <div class="flex-none">
+                <ul class="menu menu-horizontal px-1">
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('portfolio.list_portfolios') }}">Portfolios</a></li>
+                        <li><a href="{{ url_for('analytics.view') }}">Analytics</a></li>
+                        <li>
+                            <a href="{{ url_for('main.toggle_currency') }}" class="btn btn-ghost btn-sm">
+                                {% if session.get('display_currency', 'INR') == 'INR' %}
+                                    ₹ INR
+                                {% else %}
+                                    $ USD
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                                <div class="w-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white">
+                                    {{ current_user.username[0].upper() }}
+                                </div>
+                            </label>
+                            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                        <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mx-auto mt-4">
+                {% for category, message in messages %}
+                    <div class="alert {% if category == 'error' %}alert-error{% elif category == 'success' %}alert-success{% else %}alert-info{% endif %} shadow-lg">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded mt-20">
+        <nav class="grid grid-flow-col gap-4">
+            <a href="{{ url_for('main.about') }}" class="link link-hover">About</a>
+            <a href="{{ url_for('main.features') }}" class="link link-hover">Features</a>
+            <a href="{{ url_for('main.contact') }}" class="link link-hover">Contact</a>
+        </nav>
+        <nav>
+            <div class="grid grid-flow-col gap-4">
+                <p>© 2024 VirFolio. All rights reserved.</p>
+            </div>
+        </nav>
+    </footer>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        // Theme toggle
+        const html = document.documentElement;
+        const themeToggle = () => {
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+            localStorage.setItem('theme', html.getAttribute('data-theme'));
+        };
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
