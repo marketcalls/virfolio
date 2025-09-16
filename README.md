@@ -36,7 +36,7 @@ A modern, feature-rich virtual portfolio tracking application for US and Indian 
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/virfolio.git
+git clone https://github.com/marketcalls/virfolio.git
 cd virfolio
 ```
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The application will be available at `http://localhost:5000`
+The application will be available at `http://127.0.0.1:5000`
 
 ## 📁 Project Structure
 
@@ -243,15 +243,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
+MarketCalls - [@marketcalls](https://twitter.com/marketcalls)
 
-Project Link: [https://github.com/yourusername/virfolio](https://github.com/yourusername/virfolio)
+Project Link: [https://github.com/marketcalls/virfolio](https://github.com/marketcalls/virfolio)
 
 ## 🙏 Acknowledgments
 
-- [yfinance](https://github.com/ranaroussi/yfinance) for stock market data
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [DaisyUI](https://daisyui.com/) for UI components
+Special thanks to these amazing projects that made VirFolio possible:
+
+- [yfinance](https://github.com/ranaroussi/yfinance) - Reliable and free stock market data API that powers our real-time price updates
+- [DaisyUI](https://daisyui.com/) - Beautiful and accessible UI components that give VirFolio its modern, clean interface
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework for rapid UI development
 - [Plotly](https://plotly.com/) for interactive charts
 - [Flask](https://flask.palletsprojects.com/) for the web framework
 
